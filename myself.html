@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的人生轨迹 | Life Timeline</title>
+    <meta name="description" content="个人生活与职业生涯的时间轴展示">
+    <style>
+        /* --- 基础变量与重置 --- */
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2c3e50;
+            --text-secondary: #6c757d;
+            --accent-color: #3498db;
+            --line-color: #e9ecef;
+            --shadow: 0 4px 6px rgba(0,0,0,0.05);
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --card-bg: #2d2d2d;
+            --text-main: #e0e0e0;
+            --text-secondary: #a0a0a0;
+            --accent-color: #64b5f6;
+            --line-color: #404040;
+            --shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: var(--font-family); background-color: var(--bg-color); color: var(--text-main); line-height: 1.6; }
+        a { text-decoration: none; color: var(--accent-color); }
+        
+        /* --- 布局容器 --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* --- 头部区域 --- */
+        header { text-align: center; margin-bottom: 60px; animation: fadeIn 1s ease; }
+        .avatar { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--card-bg); box-shadow: var(--shadow); margin-bottom: 20px; background-color: #ddd; }
+        h1 { font-size: 2rem; margin-bottom: 10px; }
+        .bio { color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto 20px; }
+        .social-links a { margin: 0 10px; font-weight: bold; font-size: 0.9rem; opacity: 0.8; }
+        .social-links a:hover { opacity: 1; text-decoration: underline; }
+
+        /* --- 模式切换按钮 --- */
+        .theme-toggle {
+            position: absolute; top: 20px; right: 20px;
+            background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-main);
+        }
+
+        /* --- 时间轴核心样式 --- */
+        .timeline { position: relative; padding: 20px 0; }
+        
+        /* 垂直线条 */
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px; /* 移动端线条靠左 */
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--line-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            padding-left: 60px; /* 为圆点和线条留出空间 */
+            animation: slideUp 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        /* 时间轴圆点 */
+        .timeline-marker {
+            position: absolute;
+            left: 11px; /* 调整圆点位置使其居中于线条 */
+            top: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            border: 4px solid var(--bg-color);
+            z-index: 1;
+        }
+
+        /* 内容卡片 */
+        .timeline-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+
+        .timeline-date {
+            display: inline-block;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .timeline-title { font-size: 1.25rem; margin-bottom: 10px; color: var(--text-main); }
+        .timeline-desc { color: var(--text-secondary); font-size: 0.95rem; }
+        
+        /* 标签样式 */
+        .tags { margin-top: 12px; }
+        .tag {
+            display: inline-block;
+            background: var(--bg-color);
+            color: var(--text-secondary);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        /* 页脚 */
+        footer { text-align: center; padding: 40px 0; color: var(--text-secondary); font-size: 0.9rem; }
+
+        /* --- 动画定义 --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 桌面端优化 (双栏布局) --- */
+        @media (min-width: 768px) {
+            .timeline::before { left: 50%; transform: translateX(-50%); }
+            
+            .timeline-item { width: 50%; padding-left: 0; margin-bottom: 50px; }
+            .timeline-item:nth-child(odd) { padding-right: 40px; text-align: right; }
+            .timeline-item:nth-child(even) { margin-left: 50%; padding-left: 40px; }
+            
+            .timeline-item:nth-child(odd) .timeline-marker { left: auto; right: -10px; }
+            .timeline-item:nth-child(even) .timeline-marker { left: -10px; }
+
+            /* 调整桌面端气泡尖角 (可选) */
+        }
+    </style>
+</head>
+<body>
+
+    <button class="theme-toggle" onclick="toggleTheme()" title="切换模式">🌓</button>
+
+    <div class="container">
+        <header>
+            <!-- 替换你的头像图片链接，或者删除 img 标签 -->
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="avatar">
+            <h1>你的名字</h1>
+            <p class="bio">保持热爱，奔赴山海。这里记录我的一路走来。</p>
+            <div class="social-links">
+                <a href="https://github.com/yourname" target="_blank">GitHub</a>
+                <a href="mailto:your@email.com">Email</a>
+                <a href="#">Blog</a>
+            </div>
+        </header>
+
+        <div class="timeline">
+            
+            <!-- 时间节点 1 (最新) -->
+            <div class="timeline-item" style="animation-delay: 0.1s">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">2023 - 至今</span>
+                    <h3 class="timeline-title">高级前端工程师 @ 某科技公司</h3>
+                    <p class="timeline-desc">负责公司核心产品的前端架构重构，带领 5 人团队完成 Vue3 迁移，提升页面加载速度 40%。</p>
+                    <div class="tags">
+                        <span class="tag">Vue3</span>
+                        <span class="tag">Team Lead</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间节点 2 -->
+            <div class="timeline-item" style="animation-delay: 0.2s">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">2021 - 2023</span>
+                    <h3 class="timeline-title">独立开发者 & 自由职业</h3>
+                    <p class="timeline-desc">辞职探索世界，开发了 3 款 iOS 应用并在 App Store 上架。同时运营个人技术博客，累计阅读量 10w+。</p>
+                    <div class="tags">
+                        <span class="tag">SwiftUI</span>
+                        <span class="tag">Indie Hacker</span>
+                        <span class="tag">旅行</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间节点 3 -->
+            <div class="timeline-item" style="animation-delay: 0.3s">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">2017 - 2021</span>
+                    <h3 class="timeline-title">计算机科学学士 @ 某某大学</h3>
+                    <p class="timeline-desc">主修软件工程，GPA 3.8/4.0。在校期间获得ACM区域赛银牌，担任吉他社社长。</p>
+                    <div class="tags">
+                        <span class="tag">毕业</span>
+                        <span class="tag">ACM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 时间节点 4 (最早) -->
+            <div class="timeline-item" style="animation-delay: 0.4s">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <span class="timeline-date">1999.05</span>
+                    <h3 class="timeline-title">Hello World</h3>
+                    <p class="timeline-desc">出生于中国南方的一个小镇，开始探索这个世界。</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer>
+            <p>&copy; 2024 Your Name. Hosted on GitHub Pages.</p>
+        </footer>
+    </div>
+
+    <script>
+        // 深色模式逻辑
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // 初始化主题
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme) {
+            document.body.setAttribute('data-theme', savedTheme);
+        } else if (prefersDark) {
+            document.body.setAttribute('data-theme', 'dark');
+        }
+    </script>
+</body>
+</html>
